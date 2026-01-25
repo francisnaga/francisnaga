@@ -11,9 +11,9 @@ The portfolio includes 4 distinct "micro-applications" demonstrating different U
     *   *Tech*: DOM Manipulation, CSS Variables.
     *   *Key Features*: Live font testing, variable font axes (weight, spacing), dynamic CSS export.
 3.  **[Aura Shop](aura.html)**
-    *   *Concept*: Minimalist streetwear e-commerce.
-    *   *Tech*: Cart State Management (Local), Checkout Simulation.
-    *   *Key Features*: Cart drawer, size selection logic, credit card validation simulation.
+    *   *Concept*: Minimalist streetwear e-commerce (Mobile First).
+    *   *Tech*: Local State Management, Responsive CSS Grid.
+    *   *Key Features*: Cart drawer, mandatory size selection, simulation checkout alert.
 4.  **[Velocita](velocita.html)**
     *   *Concept*: High-speed fitness app landing page.
     *   *Tech*: Scroll-linked animations, Intersection Observer.

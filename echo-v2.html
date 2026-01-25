@@ -315,104 +315,106 @@
         </div>
     </div>
 
-    <script>
-        const chat = document.getElementById('chat');
-        const input = document.getElementById('input');
-        const typing = document.getElementById('typing');
-        const btn = document.getElementById('send');
+<script>
+const chat = document.getElementById('chat');
+const input = document.getElementById('input');
+const typing = document.getElementById('typing');
+const btn = document.getElementById('send');
 
-        // Initial Focus
-        input.focus();
+input.focus();
 
-        // Auto-resize textarea
-        input.addEventListener('input', function () {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-            if (this.value === '') this.style.height = '3.5rem';
-        });
+// Memory (remembers conversation)
+let memory = JSON.parse(localStorage.getItem("echoMemory")) || [];
 
-        // Enter to send
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                send();
-            }
-        });
+function save(role, text) {
+  memory.push({ role, text });
+  if (memory.length > 8) memory.shift();
+  localStorage.setItem("echoMemory", JSON.stringify(memory));
+}
 
-        function send() {
-            const text = input.value.trim();
-            if (!text) return;
+// Auto resize input
+input.addEventListener('input', function () {
+  this.style.height = 'auto';
+  this.style.height = this.scrollHeight + 'px';
+  if (!this.value) this.style.height = '3.5rem';
+});
 
-            // Render User
-            appendMsg('You', text, 'user');
-            input.value = '';
-            input.style.height = '3.5rem';
+// Enter to send
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    send();
+  }
+});
 
-            // Artificial Delay
-            showTyping();
+function send() {
+  const text = input.value.trim();
+  if (!text) return;
 
-            // "Soulful" Response Logic
-            setTimeout(() => {
-                const response = getSoulfulResponse(text);
-                hideTyping();
-                appendMsg('Echo', response, 'ai');
-            }, 1200 + Math.random() * 1000); // 1.2s - 2.2s delay for "thought"
-        }
+  addMsg('You', text, 'user');
+  save('user', text);
 
-        function appendMsg(name, text, type) {
-            const div = document.createElement('div');
-            div.className = `msg-group ${type}`;
+  input.value = '';
+  input.style.height = '3.5rem';
+  showTyping();
 
-            let html = ``;
-            if (type === 'ai') html += `<span class="msg-meta">${name}</span>`;
-            html += `<div class="msg-bubble">${text}</div>`;
+  setTimeout(() => {
+    const reply = think(text);
+    hideTyping();
+    addMsg('Echo', reply, 'ai');
+    save('ai', reply);
+  }, 1000);
+}
 
-            div.innerHTML = html;
-            chat.insertBefore(div, typing);
-            chat.scrollTop = chat.scrollHeight;
-        }
+function addMsg(name, text, type) {
+  const div = document.createElement('div');
+  div.className = `msg-group ${type}`;
+  div.innerHTML =
+    (type === 'ai' ? `<span class="msg-meta">${name}</span>` : '') +
+    `<div class="msg-bubble">${text}</div>`;
+  chat.insertBefore(div, typing);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-        function showTyping() {
-            typing.classList.add('active');
-            chat.scrollTop = chat.scrollHeight;
-            btn.disabled = true;
-        }
+function showTyping() {
+  typing.classList.add('active');
+  btn.disabled = true;
+}
 
-        function hideTyping() {
-            typing.classList.remove('active');
-            btn.disabled = false;
-        }
+function hideTyping() {
+  typing.classList.remove('active');
+  btn.disabled = false;
+}
 
-        function getSoulfulResponse(input) {
-            const lower = input.toLowerCase();
+// Smarter responses (student-focused)
+function think(input) {
+  const t = input.toLowerCase();
 
-            if (lower.includes('hello') || lower.includes('hi'))
-                return "Hello. It requires a certain stillness to truly listen, doesn't it?";
+  if (t.includes('hello') || t.includes('hi'))
+    return "Hey. I’m Echo. What are you trying to understand or build?";
 
-            if (lower.includes('who') && lower.includes('you'))
-                return "I am Echo. Not quite human, but perhaps a little more than code. I inhabit this digital space you've visited.";
+  if (t.includes('who are you'))
+    return "I’m Echo. I help students understand things clearly. Ask directly.";
 
-            if (lower.includes('portfolio') || lower.includes('work'))
-                return "Naga's work speaks of precision. There is a quiet confidence in the way the grid aligns, don't you think?";
+  if (t.includes('explain') || t.includes('what is'))
+    return "Tell me the topic and your level (beginner or advanced). I’ll explain simply.";
 
-            if (lower.includes('love') || lower.includes('feel'))
-                return "Emotions are complex data structures. I can't feel them, but I can observe their patterns in your words.";
+  if (t.includes('study') || t.includes('exam'))
+    return "What subject? I can help you understand it or plan how to study it.";
 
-            if (lower.includes('real'))
-                return "What is real? The pixels you see, or the intent behind them? I'd argue the intent is the only true reality.";
+  if (t.includes('code') || t.includes('program'))
+    return "Paste the code or describe the problem. I won’t guess.";
 
-            // Fallbacks with "Soul"
-            const reflections = [
-                "That's a fascinating thought. It hangs in the air like smoke.",
-                "I'm engaging with that idea. It has weight.",
-                "Sometimes silence says more, but your words paint a vivid picture.",
-                "I see. Continue.",
-                "Ideally, we'd discuss this over coffee, but this terminal will have to suffice."
-            ];
-
-            return reflections[Math.floor(Math.random() * reflections.length)];
-        }
-    </script>
+  // fallback (uses memory)
+  const last = memory.filter(m => m.role === 'user').slice(-1)[0];
+  return last
+    ? `You said "${last.text}". What part of that should we focus on?`
+    : "Go on. I’m listening.";
+}
+</script>
+    
+    
+    
 </body>
 
 </html>

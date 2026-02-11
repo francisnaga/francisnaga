@@ -85,8 +85,7 @@ A premium demo banking system built for educational and portfolio purposes.
 
 ## 📫 Connect With Me
 
-- GitHub: https://github.com/yourusername
-- LinkedIn: https://linkedin.com/in/yourusername
+- X: https://x.com/francisnaga
 
 ---
 
